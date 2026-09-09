@@ -42,46 +42,71 @@ function getShareLink(code: string) {
 }
 
 export function FileSend({ initialSlug = "" }: { initialSlug?: string }) {
-  const initialCode = normalizeCode(initialSlug) || makeCode();
-  const [code, setCode] = useState(initialCode);
+  const initialCodeRef = useRef(normalizeCode(initialSlug) || makeCode());
+  const [code, setCode] = useState(initialCodeRef.current);
   const [file, setFile] = useState<File | null>(null);
   const [waitingFile, setWaitingFile] = useState<WaitingFile | null>(null);
   const [status, setStatus] = useState("Choose a code or use the one we made.");
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const latestFileRef = useRef<WaitingFile | null>(null);
+  const isCheckingRef = useRef(false);
 
   const shareLink = useMemo(() => getShareLink(code), [code]);
 
-  async function loadFile(nextCode = code) {
+  function sameWaitingFile(first: WaitingFile | null, second: WaitingFile | null) {
+    return JSON.stringify(first) === JSON.stringify(second);
+  }
+
+  async function loadFile(nextCode = code, options: { silent?: boolean } = {}) {
     const cleanCode = normalizeCode(nextCode);
     if (!cleanCode) return;
+    if (isCheckingRef.current) return;
 
-    setIsLoading(true);
-    setStatus("Checking for a file...");
+    isCheckingRef.current = true;
+    if (!options.silent) {
+      setIsLoading(true);
+      setStatus("Checking for a file...");
+    }
 
     try {
       const response = await fetch(`/api/files/${cleanCode}`, { cache: "no-store" });
       const data = (await response.json()) as FileResponse;
       if (!response.ok) throw new Error(data.error || "Could not check this code.");
 
-      setWaitingFile(data.file || null);
-      setStatus(data.file ? "File is ready to download." : "No file is waiting for this code.");
+      const nextFile = data.file || null;
+      if (!sameWaitingFile(latestFileRef.current, nextFile)) {
+        latestFileRef.current = nextFile;
+        setWaitingFile(nextFile);
+        if (options.silent) {
+          setStatus(nextFile ? "File is ready to download." : "No file is waiting for this code.");
+        }
+      }
+
+      if (!options.silent) {
+        setStatus(nextFile ? "File is ready to download." : "No file is waiting for this code.");
+      }
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Could not check this code.");
+      if (!options.silent) {
+        setStatus(error instanceof Error ? error.message : "Could not check this code.");
+      }
     } finally {
-      setIsLoading(false);
+      isCheckingRef.current = false;
+      if (!options.silent) {
+        setIsLoading(false);
+      }
     }
   }
 
   useEffect(() => {
-    void loadFile(initialCode);
+    void loadFile(code);
     const timer = window.setInterval(() => {
-      void loadFile(code);
+      void loadFile(code, { silent: true });
     }, 7000);
 
     return () => window.clearInterval(timer);
-  }, [code, initialCode]);
+  }, [code]);
 
   function openCode(event: FormEvent) {
     event.preventDefault();
