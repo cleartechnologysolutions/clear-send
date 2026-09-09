@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Clear Technology Solutions Send",
-  description: "Temporary file sharing from Clear Technology Solutions.",
+  title: "Clear Send | Clear Technology Solutions",
+  description: "Temporary file handoffs from Clear Technology Solutions.",
   other: {
     "codex-preview": "development",
   },

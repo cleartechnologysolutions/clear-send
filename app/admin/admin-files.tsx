@@ -100,14 +100,14 @@ export function AdminFiles() {
   return (
     <main className="min-h-screen bg-[#07111d] px-4 py-5 text-slate-50 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-7xl flex-col gap-5">
-        <header className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[.04] px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-cyan-300/20 bg-[#0d1a29] px-4 py-3 shadow-2xl shadow-black/20">
           <a href="/" className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-lg border border-white/60 bg-cyan-400/15 text-sm font-black tracking-[.08em]">
+            <div className="grid h-12 w-12 place-items-center rounded-lg border border-cyan-200/70 bg-cyan-400/15 text-sm font-black tracking-[.08em] text-white shadow-inner shadow-cyan-300/10">
               CTS
             </div>
             <div>
-              <p className="text-base font-black">Clear Technology Solutions</p>
-              <p className="text-sm text-slate-400">Send admin</p>
+              <p className="text-lg font-black leading-tight text-white">Clear Technology Solutions</p>
+              <p className="text-sm font-medium text-cyan-100/80">Clear Send admin</p>
             </div>
           </a>
           <a
@@ -120,9 +120,9 @@ export function AdminFiles() {
 
         <section className="grid gap-5 lg:grid-cols-[360px_1fr]">
           <aside className="rounded-lg border border-white/10 bg-white/[.05] p-5 shadow-2xl shadow-black/25">
-            <h1 className="text-3xl font-black tracking-tight">Admin</h1>
+            <h1 className="text-3xl font-black tracking-tight">Clear Send Admin</h1>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              View active temporary files and clear storage when needed.
+              Manage temporary Clear Technology Solutions file handoffs.
             </p>
 
             <form onSubmit={loadFiles} className="mt-6 space-y-3">
